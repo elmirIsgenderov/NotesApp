@@ -2,18 +2,11 @@ package com.example.notesapp.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
-import androidx.lifecycle.Lifecycle
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.notesapp.R
@@ -23,7 +16,7 @@ import com.example.notesapp.databinding.FragmentHomeBinding
 import com.example.notesapp.model.Note
 import com.example.notesapp.viewmodel.NoteViewModel
 
-class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextListener {
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var homeBinding: FragmentHomeBinding? = null
     private val binding get() = homeBinding!!
@@ -51,18 +44,17 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         binding.addNoteFab.setOnClickListener {
             it.findNavController().navigate(R.id.action_homeFragment_to_addNoteFragment)
         }
-        binding.tbHome.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.searchMenu -> {
-                    val searchView = item.actionView as SearchView
-                    searchView.isSubmitButtonEnabled = false
-                    searchView.setOnQueryTextListener(this)
-                    true
-                }
-
-                else -> false
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
             }
-        }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    searcQuery(newText)
+                }
+                return false
+            }
+        })
     }
 
     private fun updateUI(note: List<Note>?) {
@@ -93,20 +85,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     }
 
     private fun searcQuery(query: String?) {
-        val searchQuery = "%$query"
-        noteViewModel.searchNote(searchQuery).observe(this) { list ->
+        noteViewModel.searchNote(query).observe(this) { list ->
+            Log.d("gdgdfgdfgdfg", list.toString())
             noteAdapter.differ.submitList(list)
         }
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        Log.d("Home", "Search query: $newText")
-        return false
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        Log.d("Home", "Search query: $query")
-        return false
     }
 
     override fun onDestroy() {

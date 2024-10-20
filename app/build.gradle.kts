@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
-    id("com.google.devtools.ksp")
+    id("kotlin-kapt")
     id("androidx.navigation.safeargs")
 }
 
@@ -56,7 +56,8 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
+    //noinspection KaptUsageInsteadOfKsp
+    kapt(libs.androidx.room.compiler)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
@@ -73,5 +74,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
     // Annotation processor
-    ksp(libs.androidx.lifecycle.compiler)
+    kapt(libs.androidx.lifecycle.compiler)
 }
